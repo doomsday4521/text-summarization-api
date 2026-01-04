@@ -1,5 +1,5 @@
 from pydantic import BaseModel,Field
-from fastapi import APIRouter
+from fastapi import APIRouter,Request
 
 router = APIRouter(prefix="/summarize",tags=["summarization"])
 
@@ -16,7 +16,9 @@ class SummarizeResponse(BaseModel):
 
 
 @router.post("/",response_model=SummarizeResponse)
-def summarize(request:SummarizeRequest):
+def summarize(request:SummarizeRequest,req:Request):
+    model =req.app.state.model
+    summary  = model.summarize(request.text)
     return SummarizeResponse(
-        summary="placeholder summary"
+        summary=summary
     )
