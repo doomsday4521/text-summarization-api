@@ -1,5 +1,20 @@
+from transformers import pipeline
+import logging
+logger = logging.getLogger(__name__)
+
 class SummarizationModel:
     def __init__(self)->None:
-        pass
+        logger.warning("Loading summarization model (this may take time)...")
+        self.pipeline = pipeline(
+            "summarization",
+            model = "facebook/bart-large-cnn"
+        )
+        logger.warning("Summarization model landed")
     def summarize(self,text:str)->str:
-        return "This is a fake summary (model not loaded yet)."
+        result  = self.pipeline(
+            text,
+            max_length=150,
+            min_length=40,
+            do_sample=False
+        )
+        return result[0]["summary_text"]
