@@ -1,13 +1,14 @@
 from transformers import pipeline
 import logging
 logger = logging.getLogger(__name__)
+from app.core.config import settings
 
 class SummarizationModel:
     def __init__(self)->None:
         logger.warning("Loading summarization model (this may take time)...")
         self.pipeline = pipeline(
             "summarization",
-            model = "facebook/bart-large-cnn"
+            model = settings.MODEL_NAME
         )
         logger.warning("Summarization model landed")
     def summarize(self,text:str)->str:

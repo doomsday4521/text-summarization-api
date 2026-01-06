@@ -1,5 +1,8 @@
 from pydantic import BaseModel,Field
 from fastapi import APIRouter,Request
+import logging 
+import time
+from app.core.config import settings
 from app.utils.hashing import hash_text
 router = APIRouter(prefix="/summarize",tags=["summarization"])
 
@@ -17,15 +20,24 @@ class SummarizeResponse(BaseModel):
 
 @router.post("/",response_model=SummarizeResponse)
 def summarize(request:SummarizeRequest,req:Request):
+    logger = logging.getLogger("summarize")
+    start_time = time.time()
     model =req.app.state.model
     cache = req.app.state.cache
     text_hash = hash_text(request.text)
     cache_key = f"summarize:{text_hash}"
     cached = cache.get(cache_key)
     if cached:
+        logger.info("Cache hit")
         return SummarizeResponse(summary=cached)
+    
+    logger.info("Cache miss, running inference")
     summary  = model.summarize(request.text)
-    cache.set(cache_key,summary,ttl=300)
+    cache.set(cache_key,summary,ttl=settings.CACHE_TTL)
+    logger.info(
+        "Summarization completed in %.2f seconds",
+        time.time()- start_time
+    )
     return SummarizeResponse(
         summary=summary
     )
