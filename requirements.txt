@@ -5,3 +5,5 @@ pydantic-settings
 redis
 transformers
 torch
+pytest
+httpx

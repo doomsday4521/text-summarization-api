@@ -4,6 +4,7 @@ from app.core.exception_handlers import validation_exception_handler
 from app.core.exception_handlers import internal_exception_handler
 from app.core.config import settings
 import logging
+from app.services.rate_limiter import RateLimiter
 import time
 from app.core.logging import setup_logging
 from app.api.summarize import router as summarize_router
@@ -29,6 +30,7 @@ def create_app()->FastAPI:
         time.time() - start_time
     )
     app.state.cache = CacheService(settings.REDIS_URL)
+    app.state.rate_limiter =None
     logger.info("Cache initialized")
     app.include_router(summarize_router)
 

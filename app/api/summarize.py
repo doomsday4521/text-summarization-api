@@ -20,6 +20,9 @@ class SummarizeResponse(BaseModel):
 
 @router.post("/",response_model=SummarizeResponse)
 def summarize(request:SummarizeRequest,req:Request):
+    rate_limiter = getattr(req.app.state, "rate_limiter", None)
+    if rate_limiter:
+        rate_limiter.check(req)
     logger = logging.getLogger("summarize")
     start_time = time.time()
     model =req.app.state.model
