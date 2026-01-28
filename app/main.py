@@ -30,7 +30,11 @@ def create_app()->FastAPI:
         time.time() - start_time
     )
     app.state.cache = CacheService(settings.REDIS_URL)
-    app.state.rate_limiter =None
+    app.state.rate_limiter =RateLimiter(
+        redis_client=app.state.cache.client,
+        limit=5,
+        window=60
+    )
     logger.info("Cache initialized")
     app.include_router(summarize_router)
 

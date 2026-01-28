@@ -1,9 +1,12 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+
 fastapi
 uvicorn
 pydantic
 pydantic-settings
 redis
-transformers
-torch
+transformers==4.36.2
+torch==2.10.0+cpu
 pytest
 httpx
